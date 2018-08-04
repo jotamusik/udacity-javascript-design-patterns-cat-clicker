@@ -81,40 +81,64 @@ function secondApproach() {
     }
 }
 
-function multipleCatsWithSideSelector() {
+function fillSideBar(cats) {
 
-    let cats = initializeCats();
+    let catIndex = 0;
 
     for ( let cat of cats ) {
+
         let sidebar = document.getElementById('sidebar');
         let listItem = document.createElement('div');
+        listItem.setAttribute('id', catIndex.toString());
         listItem.setAttribute('class', 'listItem');
         listItem.innerText = cat.getName();
         sidebar.appendChild(listItem);
-        sidebar.addEventListener('click', ((catCopy) => {
+        listItem.addEventListener('click', changeSelectedCatOnClick);
 
-            return () => {
-
-                let catNameParagraph = document.getElementById('catName');
-                catNameParagraph.innerText = catCopy.getName();
-
-                let catImg = document.getElementById('catImg');
-                catImg.setAttribute('src', catCopy.getImageRoute());
-                catImg.addEventListener('click', ((catNestedCopy) => {
-                    return () => {
-                        catNestedCopy.incrementClicksCounter();
-                        document.getElementById('catCounterParagraph').innerText = 'Clicks Counter: ' + catNestedCopy.getClickCounter();
-                    }
-                })(catCopy), false);
-
-                let catClickCounter = document.getElementById('catCounterParagraph');
-                catClickCounter.innerText = 'Clicks Counter: ' + cat.getClickCounter();
-            }
-
-        })(cat), false);
+        catIndex++;
     }
 
 }
 
+function changeSelectedCatOnClick(event) {
+    let id = event.target.getAttribute('id');
+    selectedCat = cats[id];
+    changeSelectedCatContentInfo();
+}
 
-document.body.onload = multipleCatsWithSideSelector;
+function updateContentInfoCatName() {
+    document.getElementById('catName').innerText = selectedCat.getName();
+}
+
+function updateContentInfoImgRoute() {
+    document.getElementById('catImg').setAttribute('src', selectedCat.getImageRoute());
+}
+
+function updateContentInfoClickCounterParagraph() {
+    document.getElementById('catCounterParagraph').innerText = 'Clicks Counter: ' + selectedCat.getClickCounter();
+}
+
+function changeSelectedCatContentInfo() {
+    updateContentInfoCatName();
+    updateContentInfoImgRoute();
+    updateContentInfoClickCounterParagraph();
+}
+
+function incrementSelectedCatClicksCounter(event) {
+    selectedCat.incrementClicksCounter();
+    updateContentInfoClickCounterParagraph();
+}
+
+
+
+let selectedCat = new Cat();
+let cats = initializeCats();
+
+function run() {
+
+    fillSideBar(cats);
+    document.getElementById('catImg').addEventListener('click', incrementSelectedCatClicksCounter);
+}
+
+
+document.body.onload = run;
